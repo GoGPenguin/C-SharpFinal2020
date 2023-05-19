@@ -32,7 +32,7 @@ namespace C_SharpExercise2
                     this.cbbSort.Items.Add(dgv.Columns[i].HeaderText.ToString());
                 }
             }
-            this.cbbSort.SelectedItem = "TenSV";
+            this.cbbSort.SelectedIndex = 0;
         }
 
         public void LoadCBB()
@@ -107,10 +107,12 @@ namespace C_SharpExercise2
 
                 f.ShowData += new DetailForm.DelegateForm(this.ShowData);
                 f.Show();
+                this.cbbHP.SelectedIndex = 0;
+                this.cbbSort.SelectedIndex = 0;
             }
             else
             {
-                MessageBox.Show("Chỉ chỉnh sửa mỗi lần 1 mặt hàng");
+                MessageBox.Show("Chỉ chỉnh sửa mỗi lần 1 sinh viên");
             }
         }
 
@@ -119,6 +121,8 @@ namespace C_SharpExercise2
             DetailForm f = new DetailForm();
             f.ShowData += new DetailForm.DelegateForm(this.ShowData);
             f.Show();
+            this.cbbHP.SelectedIndex = 0;
+            this.cbbSort.SelectedIndex = 0;
         }
     }
 }

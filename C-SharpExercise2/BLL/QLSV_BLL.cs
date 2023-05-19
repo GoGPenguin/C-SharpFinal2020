@@ -112,6 +112,8 @@ namespace C_SharpExercise2.BLL
                         DiemGK = p.DiemGK,
                         DiemCK = p.DiemCK,
                         DiemTongKet = p.DiemBT * 0.2 + p.DiemGK * 0.3 + p.DiemCK * 0.5,
+                        NgayThi = p.NgayThi,
+                        Gender = p.Gender,
                     }).OrderBy(sortType).ToList();
                 foreach (var item in data)
                 {

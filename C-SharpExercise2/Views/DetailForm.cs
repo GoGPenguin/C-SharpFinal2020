@@ -37,6 +37,9 @@ namespace C_SharpExercise2
             {
                 this.Text = "ADD";
                 rBtnMale.Checked = true;
+                txtDiemBT.Text = "0";
+                txtDiemGK.Text = "0";
+                txtDiemCK.Text = "0";
             }
             else
             {
@@ -53,8 +56,8 @@ namespace C_SharpExercise2
                 txtDiemBT.Text = sv.DiemBT.ToString();
                 txtDiemGK.Text = sv.DiemGK.ToString();
                 txtDiemCK.Text = sv.DiemCK.ToString();
-                SetTongKet();
             }
+            SetTongKet();
         }
 
         private void LoadCBBLopHP()
@@ -85,29 +88,45 @@ namespace C_SharpExercise2
                 MessageBox.Show("Vui lòng nhập đủ thông tin");
                 return;
             }
+
+
+            double bt = (txtDiemBT.Text == "" || !isNumeric(txtDiemBT.Text)) ? 0 : Convert.ToDouble(txtDiemBT.Text);
+            double gk = (txtDiemGK.Text == "" || !isNumeric(txtDiemGK.Text)) ? 0 : Convert.ToDouble(txtDiemGK.Text);
+            double ck = (txtDiemCK.Text == "" || !isNumeric(txtDiemCK.Text)) ? 0 : Convert.ToDouble(txtDiemCK.Text);
+
+
             var sv = new SinhVien
             {
-               MSSV = txtIdSV.Text,
-               TenSV = txtName.Text,
-               LopSH = cbbLSH.SelectedItem.ToString(),
-               MaHP= ((CBBItems)cbbHP.SelectedItem).Value,
-               Gender = (rBtnFemale.Checked ? true : false),
-               NgayThi = DateTime.Parse(dtpkNgayThi.Value.Date.ToString()),
-               DiemBT = Convert.ToDouble(txtDiemBT.Text),
-               DiemCK = Convert.ToDouble(txtDiemCK.Text),
-               DiemGK = Convert.ToDouble(txtDiemGK.Text),
-        };
+                MSSV = txtIdSV.Text,
+                TenSV = txtName.Text,
+                LopSH = cbbLSH.SelectedItem.ToString(),
+                MaHP = ((CBBItems)cbbHP.SelectedItem).Value,
+                Gender = (rBtnFemale.Checked ? true : false),
+                NgayThi = DateTime.Parse(dtpkNgayThi.Value.Date.ToString()),
+                DiemBT = bt,
+                DiemCK = gk,
+                DiemGK = ck,
+            };
 
             if (MSSV == null)
-            {
-                QLSV_BLL.Instance.AddSV(sv);
+            {   
+                if (!checkExist(txtIdSV.Text, ((CBBItems)cbbHP.SelectedItem).Value.ToString()))
+                {
+                    QLSV_BLL.Instance.AddSV(sv);
+                    this.ShowData();
+                    this.Dispose();
+                }
+                else
+                {
+                    MessageBox.Show("Không thể tồn tại nhiều hơn cùng 1 sinh viên trong danh sách học phần");
+                }
             }
             else
             {
                 QLSV_BLL.Instance.UpdateSV(sv);
+                this.ShowData();
+                this.Dispose();
             }
-            this.ShowData();
-            this.Dispose();
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
@@ -117,20 +136,24 @@ namespace C_SharpExercise2
 
         public void SetTongKet()
         {
-            double bt = 0, gk = 0, ck = 0;
-            if (txtDiemBT.Text == "" || txtDiemGK.Text == "" || txtDiemCK.Text == "")
-            {
-
-            }
-            else
-            {
-                if (txtDiemBT.Text != "") bt = Convert.ToDouble(txtDiemBT.Text);
-                if (txtDiemGK.Text != "") gk = Convert.ToDouble(txtDiemGK.Text);
-                if (txtDiemCK.Text != "") ck = Convert.ToDouble(txtDiemCK.Text);
-            }
+            double bt = (txtDiemBT.Text == "" || !isNumeric(txtDiemBT.Text)) ? 0 : Convert.ToDouble(txtDiemBT.Text);
+            double gk = (txtDiemGK.Text == "" || !isNumeric(txtDiemGK.Text)) ? 0 : Convert.ToDouble(txtDiemGK.Text);
+            double ck = (txtDiemCK.Text == "" || !isNumeric(txtDiemCK.Text)) ? 0 : Convert.ToDouble(txtDiemCK.Text);
 
             txtTongKet.Text = (bt * 0.2 + gk * 0.3 + ck* 0.5).ToString();
             txtTongKet.Enabled = false;
+        }
+
+        public bool checkExist(string mssv, string mahp)
+        {
+            var data = QLSV_BLL.Instance.GetSVByID(mssv, mahp);
+            if (data == null) return false;
+            return true;
+        }
+
+        public bool isNumeric(string s)
+        {
+            return double.TryParse(s, out _);
         }
     }
 }
